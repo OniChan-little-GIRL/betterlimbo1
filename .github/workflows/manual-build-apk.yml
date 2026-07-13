@@ -78,34 +78,12 @@ jobs:
             modules=("${{ inputs.module }}")
           fi
 
-          failed_modules=()
           for module in "${modules[@]}"; do
             task=":${module}:assemble${variant}"
             echo "::group::${task}"
-            if ! gradle "${task}" --no-daemon --stacktrace --warning-mode all; then
-              failed_modules+=("${module}")
-            fi
+            gradle "${task}" --no-daemon --stacktrace --warning-mode all
             echo "::endgroup::"
           done
-
-          apk_count=$(find limbo-android-* -path "*/build/outputs/apk/**/*.apk" -type f | wc -l)
-          {
-            echo "### APK build summary"
-            echo
-            echo "- Requested module: \`${{ inputs.module }}\`"
-            echo "- Requested build type: \`${{ inputs.build_type }}\`"
-            echo "- APK files found: \`${apk_count}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          if [ "${#failed_modules[@]}" -gt 0 ]; then
-            echo "- Modules with Gradle failures: \`${failed_modules[*]}\`" >> "$GITHUB_STEP_SUMMARY"
-            echo "::warning::Gradle failed for: ${failed_modules[*]}"
-          fi
-
-          if [ "${apk_count}" -eq 0 ]; then
-            echo "No APK artifacts were produced." >&2
-            exit 1
-          fi
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
