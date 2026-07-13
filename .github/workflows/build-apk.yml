@@ -1,0 +1,93 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: Android app module to build
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - limbo-android-x86
+          - limbo-android-arm
+          - limbo-android-ppc
+          - limbo-android-sparc
+      build_type:
+        description: Build variant
+        required: true
+        default: debug
+        type: choice
+        options:
+          - debug
+          - release
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    name: Build ${{ inputs.module }} ${{ inputs.build_type }} APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-33" \
+            "platforms;android-34" \
+            "platforms;android-35" \
+            "build-tools;33.0.1" \
+            "build-tools;34.0.0" \
+            "build-tools;35.0.0"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Build selected APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          case "${{ inputs.build_type }}" in
+            debug) variant="Debug" ;;
+            release) variant="Release" ;;
+            *) echo "Unsupported build type: ${{ inputs.build_type }}" >&2; exit 1 ;;
+          esac
+
+          if [ "${{ inputs.module }}" = "all" ]; then
+            modules=(limbo-android-x86 limbo-android-arm limbo-android-ppc limbo-android-sparc)
+          else
+            modules=("${{ inputs.module }}")
+          fi
+
+          for module in "${modules[@]}"; do
+            task=":${module}:assemble${variant}"
+            echo "::group::${task}"
+            gradle "${task}" --no-daemon --stacktrace --warning-mode all
+            echo "::endgroup::"
+          done
+
+      - name: Upload APK artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-${{ inputs.module }}-${{ inputs.build_type }}
+          path: |
+            limbo-android-*/build/outputs/apk/**/*.apk
+          if-no-files-found: error

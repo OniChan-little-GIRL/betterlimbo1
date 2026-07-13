@@ -5103,13 +5103,12 @@ public class LimboActivity extends AppCompatActivity {
     // Set Hard Disk
     private void populateRAM() {
 
-        String[] arraySpinner = new String[256];
+        ArrayList<String> arraySpinner = new ArrayList<String>();
 
-        arraySpinner[0] = 4 + "";
-        for (int i = 1; i < arraySpinner.length; i++) {
-            arraySpinner[i] = i * 8 + "";
+        arraySpinner.add(4 + "");
+        for (int i = 8; i <= 12000; i += 8) {
+            arraySpinner.add(i + "");
         }
-        ;
 
         ArrayAdapter<String> ramAdapter = new ArrayAdapter<String>(this, R.layout.custom_spinner_item, arraySpinner);
         ramAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
@@ -5777,11 +5776,28 @@ public class LimboActivity extends AppCompatActivity {
         arrX86_64.add("Broadwell-noTSX");// Intel Core Processor (Broadwell,
         // no TSX)
         arrX86_64.add("Broadwell");// Intel Core Processor (Broadwell)
+        arrX86_64.add("Skylake-Client");// Intel Core Processor (Skylake,
+        // client)
+        arrX86_64.add("Skylake-Server");// Intel Xeon Processor (Skylake,
+        // server)
+        arrX86_64.add("Cascadelake-Server");// Intel Xeon Processor
+        // (Cascadelake)
+        arrX86_64.add("Cooperlake");// Intel Xeon Processor (Cooperlake)
+        arrX86_64.add("Icelake-Client");// Intel Core Processor (Icelake,
+        // client)
+        arrX86_64.add("Icelake-Server");// Intel Xeon Processor (Icelake,
+        // server)
+        arrX86_64.add("KnightsMill");// Intel Xeon Phi Processor
+        // (Knights Mill)
         arrX86_64.add("Opteron_G1");// AMD Opteron 240 (Gen 1 Class Opteron)
         arrX86_64.add("Opteron_G2");// AMD Opteron 22xx (Gen 2 Class Opteron)
         arrX86_64.add("Opteron_G3");// AMD Opteron 23xx (Gen 3 Class Opteron)
         arrX86_64.add("Opteron_G4");// AMD Opteron 62xx class CPU
         arrX86_64.add("Opteron_G5");// AMD Opteron 63xx class CPU
+        arrX86_64.add("EPYC");// AMD EPYC Processor
+        arrX86_64.add("EPYC-IBPB");// AMD EPYC Processor with IBPB
+        arrX86_64.add("EPYC-Rome");// AMD EPYC Processor (Rome)
+        arrX86_64.add("Dhyana");// Hygon Dhyana Processor
 
         // ARM cpus
         ArrayList<String> arrARM = new ArrayList<String>();
@@ -5822,6 +5838,8 @@ public class LimboActivity extends AppCompatActivity {
         arrARM64.add("Default");
         arrARM64.add("cortex-a53");
         arrARM64.add("cortex-a57");
+        arrARM64.add("cortex-a72");
+        arrARM64.add("max");
 
         // Mips cpus
         ArrayList<String> arrMips = new ArrayList<String>();
