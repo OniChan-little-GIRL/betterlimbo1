@@ -81,7 +81,8 @@ jobs:
           for module in "${modules[@]}"; do
             task=":${module}:assemble${variant}"
             echo "::group::${task}"
-            gradle "${task}" --no-daemon --stacktrace --warning-mode all
+            echo "Building module: ${module} with task: ${task}"
+            gradle "${task}" --no-daemon --stacktrace --info --warning-mode all
             echo "::endgroup::"
           done
 
