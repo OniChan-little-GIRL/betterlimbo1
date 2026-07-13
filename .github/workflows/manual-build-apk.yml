@@ -1,4 +1,4 @@
-name: Build APK 1
+name: Manual APK Build
 run-name: Build ${{ inputs.module }} ${{ inputs.build_type }} APK
 
 on:
